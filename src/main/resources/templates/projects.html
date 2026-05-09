@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Projects - taskqora')}"></head>
+<body>
+    <aside th:replace="~{fragments :: sidebar('projects', ${user.role})}"></aside>
+    
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+            </div>
+            <div class="top-bar-actions">
+                <div class="notif-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notif-badge">0</span>
+                </div>
+                <div class="user-profile-top">
+                    <div class="user-avatar-mini" th:text="${user.name.substring(0,1).toUpperCase()}">U</div>
+                    <div class="user-info">
+                        <span class="user-name" th:text="${user.name}">User</span>
+                        <span class="user-role" th:text="${user.role}">Role</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-page">
+            <header class="page-header">
+                <div class="header-text">
+                    <h1>Projects</h1>
+                    <p>Manage and track all your projects in one place.</p>
+                </div>
+                <div class="header-actions" th:if="${user.role == 'ADMIN'}">
+                    <a th:href="@{/projects/create}" class="btn-premium" style="text-decoration: none;">
+                        <i class="fas fa-plus"></i> Create New Project
+                    </a>
+                </div>
+            </header>
+
+            <!-- Summary Cards -->
+            <div class="summary-grid" style="grid-template-columns: repeat(4, 1fr);">
+                <div class="summary-card card-indigo">
+                    <div class="summary-header">
+                        <div class="summary-icon">
+                            <i class="fas fa-folder"></i>
+                        </div>
+                        <div class="summary-details">
+                            <h3 th:text="${totalProjects}">0</h3>
+                            <p>Total Projects</p>
+                        </div>
+                    </div>
+                    <div class="summary-footer" th:text="${projectsFooter}">2 active projects</div>
+                </div>
+                <div class="summary-card card-green">
+                    <div class="summary-header">
+                        <div class="summary-icon">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <div class="summary-details">
+                            <h3 th:text="${completedProjects}">0</h3>
+                            <p>Completed Projects</p>
+                        </div>
+                    </div>
+                    <div class="summary-footer" th:text="${updatedFooter}">Updated recently</div>
+                </div>
+                <div class="summary-card card-blue">
+                    <div class="summary-header">
+                        <div class="summary-icon">
+                            <i class="fas fa-spinner"></i>
+                        </div>
+                        <div class="summary-details">
+                            <h3 th:text="${inProgressProjects}">0</h3>
+                            <p>In Progress Projects</p>
+                        </div>
+                    </div>
+                    <div class="summary-footer">Currently active</div>
+                </div>
+                <div class="summary-card card-orange">
+                    <div class="summary-header">
+                        <div class="summary-icon">
+                            <i class="fas fa-pause-circle"></i>
+                        </div>
+                        <div class="summary-details">
+                            <h3 th:text="${onHoldProjects}">0</h3>
+                            <p>On Hold Projects</p>
+                        </div>
+                    </div>
+                    <div class="summary-footer">Paused projects</div>
+                </div>
+            </div>
+
+            <!-- Filters Area -->
+            <div class="filters-bar">
+                <div class="filters-left"></div>
+                <div class="filters-right">
+                    <select class="filter-select" id="statusFilter">
+                        <option value="All">All Status</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Development">Development</option>
+                        <option value="Completed">Completed</option>
+                        <option value="On Hold">On Hold</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Projects Table / Empty State -->
+            <div class="side-card" style="padding: 0; overflow: hidden; border-radius: 20px;">
+                <div class="table-responsive">
+                    <table class="table-premium">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%;">Project Name</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Timeline</th>
+                                <th style="width: 180px;">Progress</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="project : ${projects}">
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 1rem;">
+                                        <div style="width: 42px; height: 42px; border-radius: 12px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 1.1rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
+                                            <i class="fas fa-folder"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 800; color: var(--text-main); font-size: 1rem; letter-spacing: -0.01em;" th:text="${project.title}">Project</div>
+                                            <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em;" th:text="${project.category}">Category</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                     <span class="badge" th:classappend="${project.priority == 'High' ? 'badge-danger' : (project.priority == 'Medium' ? 'badge-warning' : 'badge-success')}" style="border-radius: 6px; padding: 0.35rem 0.6rem;">
+                                        <i class="fas fa-flag"></i>
+                                        <span th:text="${project.priority ?: 'Low'}">PRIORITY</span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge" th:classappend="${project.status == 'Completed' ? 'badge-completed' : (project.status == 'On Hold' ? 'badge-on_hold' : 'badge-in_progress')}">
+                                        <i class="fas" th:classappend="${project.status == 'Completed' ? 'fa-check-circle' : (project.status == 'On Hold' ? 'fa-pause-circle' : 'fa-spinner fa-spin')}"></i>
+                                        <span th:text="${project.status}">STATUS</span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <div style="display: flex; flex-direction: column; gap: 0.2rem;">
+                                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-main);" th:text="${#temporals.format(project.startDate, 'dd MMM yyyy')}">Start</span>
+                                        <span style="font-size: 0.7rem; font-weight: 600; color: var(--text-muted);" th:text="${project.endDate != null ? 'Due: ' + #temporals.format(project.endDate, 'dd MMM yyyy') : 'No Deadline'}">Deadline</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="progress-mini-container">
+                                        <div class="progress-mini">
+                                            <div class="progress-inner" 
+                                                 th:classappend="${project.status == 'Completed' ? 'high' : (project.status == 'On Hold' ? 'low' : 'mid')}"
+                                                 th:style="'width: ' + ${project.status == 'Completed' ? '100%' : '45%'}"></div>
+                                        </div>
+                                        <span class="progress-text" 
+                                              th:style="'color: ' + ${project.status == 'Completed' ? '#10b981' : (project.status == 'On Hold' ? '#ef4444' : '#3b82f6')}"
+                                              th:text="${project.status == 'Completed' ? '100%' : '45%'}">0%</span>
+                                    </div>
+                                </td>
+                                <td style="text-align: right;">
+                                    <div style="display: flex; justify-content: flex-end; gap: 0.4rem;">
+                                        <a th:href="@{'/projects/view/' + ${project.id}}" class="page-btn" style="width: 36px; height: 36px;" title="View Details"><i class="fas fa-eye"></i></a>
+                                        <th:block th:if="${user.role == 'ADMIN'}">
+                                            <a th:href="@{'/projects/edit/' + ${project.id}}" class="page-btn" style="width: 36px; height: 36px;" title="Edit Project"><i class="fas fa-edit"></i></a>
+                                            <a href="javascript:void(0)" 
+                                               class="page-btn" 
+                                               style="width: 36px; height: 36px; color: #ef4444; border-color: rgba(239, 68, 68, 0.2);" 
+                                               title="Delete Project"
+                                               th:onclick="'showDeleteModal(' + ${project.id} + ')'">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        </th:block>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State -->
+                <div th:if="${projects.empty}" class="empty-state">
+                    <img th:src="@{/images/no-projects.png}" alt="No Projects" style="width: 120px; opacity: 0.5; margin-bottom: 1.5rem;">
+                    <h3 style="margin-bottom: 0.5rem; font-weight: 800;">No projects found</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 2rem;">You haven't created any projects yet.</p>
+                    <a th:href="@{/projects/create}" class="btn-premium">
+                        <i class="fas fa-plus"></i> Create Your First Project
+                    </a>
+                </div>
+
+                <!-- Pagination Footer -->
+                <div class="table-footer">
+                    <div class="footer-info">
+                        Showing <span th:text="${projects.empty ? 0 : 1}">0</span> to <span th:text="${projects.size()}">0</span> of <span th:text="${projects.size()}">0</span> projects
+                    </div>
+                    <div class="pagination">
+                        <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-content-premium">
+            <div class="modal-header-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Delete Project?</h3>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this project? This action will permanently remove all associated tasks and data. <strong>This cannot be undone.</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeDeleteModal()" class="btn-secondary-premium">Cancel</button>
+                <button id="confirmDeleteBtn" class="btn-danger-premium">Delete Permanently</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .create-project-btn-header {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+        .create-project-btn-header:hover { background: var(--primary-dark); transform: translateY(-2px); }
+
+        .filters-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .filters-right { display: flex; gap: 0.75rem; }
+        
+        .filter-select {
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: white;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        .search-mini {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .search-mini i {
+            position: absolute;
+            left: 1rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .search-mini input {
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: white;
+            font-size: 0.85rem;
+            width: 200px;
+            outline: none;
+        }
+
+        .empty-state {
+            padding: 5rem 2rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .table-footer {
+            padding: 1.25rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+        }
+
+        .footer-info { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+        
+        .pagination { display: flex; gap: 0.5rem; }
+        .page-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: white;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .page-btn.active { background: #eef2ff; color: var(--primary); border-color: var(--primary); font-weight: 700; }
+        .page-btn:hover:not(.active) { background: var(--bg-light); }
+
+        .progress-mini-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 200px;
+        }
+        .progress-mini {
+            flex: 1;
+            height: 8px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-inner {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #818cf8);
+            border-radius: 10px;
+        }
+        .progress-text {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+            min-width: 40px;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-content-premium {
+            background: white;
+            width: 450px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            transform: scale(0.9);
+            animation: slideUp 0.3s forwards cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { to { transform: scale(1); } }
+        
+        .modal-header-danger {
+            padding: 2rem 2rem 1rem;
+            text-align: center;
+            color: #ef4444;
+        }
+        .modal-header-danger i { font-size: 3rem; margin-bottom: 1rem; }
+        .modal-header-danger h3 { font-size: 1.5rem; font-weight: 800; color: #1e293b; margin: 0; }
+        
+        .modal-body { padding: 0 2.5rem 1.5rem; text-align: center; }
+        .modal-body p { color: #64748b; line-height: 1.6; font-size: 0.95rem; margin: 0; }
+        
+        .modal-footer {
+            padding: 1.5rem 2rem 2rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        .btn-secondary-premium {
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #64748b;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-danger-premium {
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            border: none;
+            background: #ef4444;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            transition: all 0.2s;
+        }
+        .btn-danger-premium:hover { background: #dc2626; transform: translateY(-2px); }
+        .btn-secondary-premium:hover { background: #f8fafc; color: #1e293b; }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const statusFilter = document.getElementById('statusFilter');
+            const tableRows = document.querySelectorAll('.table-premium tbody tr');
+
+            function filterProjects() {
+                const selectedStatus = statusFilter.value;
+
+                tableRows.forEach(row => {
+                    const statusBadge = row.querySelector('.badge-completed, .badge-on_hold, .badge-in_progress');
+                    if (!statusBadge) return;
+                    
+                    const status = statusBadge.textContent.trim();
+                    const matchesStatus = selectedStatus === 'All' || status.includes(selectedStatus);
+
+                    if (matchesStatus) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+
+            statusFilter.addEventListener('change', filterProjects);
+        });
+
+        let deleteProjectId = null;
+        function showDeleteModal(id) {
+            deleteProjectId = id;
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+            if (deleteProjectId) {
+                window.location.href = '/projects/delete/' + deleteProjectId;
+            }
+        });
+
+        // Close on escape
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeDeleteModal();
+        });
+    </script>
+</body>
+</html>
+

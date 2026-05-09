@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('My Profile - taskqora')}"></head>
+
+<body>
+    <aside th:replace="~{fragments :: sidebar('profile', ${user.role})}"></aside>
+
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+            </div>
+            <div class="top-bar-actions">
+                <div class="notif-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notif-badge">0</span>
+                </div>
+                <div class="user-profile-top">
+                    <div class="user-avatar-mini" th:text="${user.name != null && !user.name.isEmpty() ? user.name.substring(0,1).toUpperCase() : 'U'}">U</div>
+                    <div class="user-info">
+                        <span class="user-name" th:text="${user.name}">User</span>
+                        <span class="user-role" th:text="${user.role}">Role</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-page">
+            <header class="page-header">
+                <div class="header-text">
+                    <h1 th:text="${profileUser.id == user.id ? 'My Profile' : profileUser.name + '''s Profile'}">My Profile</h1>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">
+                        <a th:href="@{/dashboard}" style="color: var(--primary); text-decoration: none;">Dashboard</a>
+                        <span style="margin: 0 0.5rem;">&gt;</span> <span th:text="${profileUser.id == user.id ? 'My Profile' : 'Member Profile'}">Profile</span>
+                    </p>
+                </div>
+            </header>
+
+            <div class="content-grid" style="grid-template-columns: 320px 1fr; align-items: start; gap: 2rem;">
+                <!-- Left: Profile Card -->
+                <div class="side-card" style="padding: 2.5rem 1.5rem; text-align: center;">
+                    <div class="profile-avatar-wrapper"
+                        style="position: relative; width: 120px; height: 120px; margin: 0 auto 1.5rem;">
+                        <div class="profile-avatar-large"
+                            style="width: 100%; height: 100%; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 800; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);"
+                            th:text="${profileUser.name != null && !profileUser.name.isEmpty() ? profileUser.name.substring(0,1).toUpperCase() : 'P'}">R</div>
+                    </div>
+
+                    <h2 style="margin-bottom: 0.25rem; font-weight: 800;" th:text="${profileUser.name}">Rups</h2>
+                    <p style="color: var(--primary); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2rem;"
+                        th:text="${profileUser.role}">Admin</p>
+
+                    <div class="profile-contact-list"
+                        style="text-align: left; border-top: 1px solid var(--border-color); padding-top: 2rem;">
+                        <div class="contact-item"
+                            style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem;">
+                            <i class="far fa-envelope" style="color: var(--text-muted); width: 16px;"></i>
+                            <span style="font-size: 0.9rem; color: var(--text-main); font-weight: 600;"
+                                th:text="${profileUser.email}">email@example.com</span>
+                        </div>
+                        <div class="contact-item"
+                            style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem;">
+                            <i class="fas fa-phone-alt" style="color: var(--text-muted); width: 16px;"></i>
+                            <span style="font-size: 0.9rem; color: var(--text-main); font-weight: 600;"
+                                th:text="${profileUser.phoneNumber != null ? profileUser.phoneNumber : '+91 0000000000'}">+91
+                                0000000000</span>
+                        </div>
+                        <div class="contact-item"
+                            style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem;">
+                            <i class="fas fa-shield-alt" style="color: var(--text-muted); width: 16px;"></i>
+                            <span style="font-size: 0.9rem; color: var(--text-main); font-weight: 600;"
+                                th:text="${profileUser.role}">Role</span>
+                        </div>
+                        <div class="contact-item" style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem;">
+                            <i class="far fa-calendar-alt" style="color: var(--text-muted); width: 16px;"></i>
+                            <span style="font-size: 0.9rem; color: var(--text-main); font-weight: 600;"
+                                th:text="'Joined on ' + ${#temporals.format(profileUser.joinedDate, 'MMMM d, yyyy')}">Joined Date</span>
+                        </div>
+                        <div class="contact-item" style="display: flex; align-items: center; gap: 1rem;" th:if="${profileUser.lastLogin != null}">
+                            <i class="fas fa-history" style="color: var(--text-muted); width: 16px;"></i>
+                            <span style="font-size: 0.9rem; color: var(--text-main); font-weight: 600;"
+                                th:text="'Last login: ' + ${#temporals.format(profileUser.lastLogin, 'MMM d, HH:mm')}">Last Login</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Tabs & Form -->
+                <div class="side-card" style="padding: 0;">
+                    <div class="tabs-header"
+                        style="display: flex; border-bottom: 1px solid var(--border-color); padding: 0 2rem;">
+                        <div class="tab-item active" onclick="switchTab('personalInfo')" id="tab-personalInfo"
+                            style="padding: 1.5rem 0; margin-right: 2.5rem; color: var(--primary); border-bottom: 2px solid var(--primary); font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.75rem;">
+                            <i class="far fa-user"></i> Personal Information
+                        </div>
+                        <div class="tab-item" th:if="${profileUser.id == user.id}" onclick="switchTab('changePassword')" id="tab-changePassword"
+                            style="padding: 1.5rem 0; color: var(--text-muted); font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.75rem;">
+                            <i class="fas fa-lock"></i> Change Password
+                        </div>
+                    </div>
+
+                    <div class="tab-content-wrapper" style="padding: 2.5rem;">
+                        <!-- Personal Info Tab -->
+                        <div id="personalInfo" class="tab-pane">
+                            <form th:action="@{/profile/update}" method="POST" class="profile-form" style="max-width: 800px;">
+                                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 1.5rem;">
+                                    <div class="form-group">
+                                        <label style="display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--text-main);">Full Name</label>
+                                        <input type="text" name="name" th:value="${profileUser.name}"
+                                            style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; font-weight: 600;"
+                                            placeholder="Enter full name" th:readonly="${profileUser.id != user.id}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label style="display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--text-main);">Email Address</label>
+                                        <input type="email" th:value="${profileUser.email}"
+                                            style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; font-weight: 600; background: var(--bg-light);"
+                                            placeholder="Enter email" readonly>
+                                        <small style="color: var(--text-muted); font-size: 0.75rem;" th:if="${profileUser.id == user.id}">Email cannot be changed.</small>
+                                    </div>
+                                </div>
+
+                                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2.5rem;">
+                                    <div class="form-group">
+                                        <label style="display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--text-main);">Phone Number</label>
+                                        <input type="text" name="phoneNumber" th:value="${profileUser.phoneNumber}"
+                                            maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                            style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; font-weight: 600;"
+                                            placeholder="Enter 10-digit number" th:readonly="${profileUser.id != user.id}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label style="display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--text-main);">Role</label>
+                                        <input type="text" th:value="${profileUser.role}"
+                                            style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-light); color: var(--text-muted); cursor: not-allowed; outline: none; font-weight: 600;"
+                                            readonly>
+                                    </div>
+                                </div>
+
+                                <button th:if="${profileUser.id == user.id}" type="submit" class="btn-premium"
+                                    style="padding: 0.75rem 2.5rem; border-radius: 10px; font-weight: 700; display: flex; align-items: center; gap: 0.75rem;">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Change Password Tab -->
+                        <div id="changePassword" class="tab-pane" style="display: none;" th:if="${profileUser.id == user.id}">
+                            <h4 style="margin-bottom: 0.5rem; font-weight: 800;">Change Password</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2.5rem;">Update your
+                                account security by changing your password.</p>
+
+                            <form th:action="@{/profile/change-password}" method="POST" class="profile-form">
+                                <div class="form-group" style="margin-bottom: 1.5rem; max-width: 500px;">
+                                    <label
+                                        style="display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--text-main);">Current
+                                        Password</label>
+                                    <input type="password" name="currentPassword" required
+                                        style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; font-weight: 600;"
+                                        placeholder="Enter current password">
+                                </div>
+
+                                <div class="form-group" style="margin-bottom: 1.5rem; max-width: 500px;">
+                                    <label
+                                        style="display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--text-main);">New
+                                        Password</label>
+                                    <input type="password" name="newPassword" id="newPassword" required
+                                        onkeyup="checkPasswordStrength(this.value)"
+                                        style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; font-weight: 600;"
+                                        placeholder="Enter new password">
+                                    
+                                    <!-- Password Strength Indicator -->
+                                    <div id="password-strength-wrapper" style="margin-top: 0.75rem; display: none;">
+                                        <div style="display: flex; gap: 4px; height: 4px; margin-bottom: 0.5rem;">
+                                            <div id="strength-bar-1" style="flex: 1; background: #e5e7eb; border-radius: 2px;"></div>
+                                            <div id="strength-bar-2" style="flex: 1; background: #e5e7eb; border-radius: 2px;"></div>
+                                            <div id="strength-bar-3" style="flex: 1; background: #e5e7eb; border-radius: 2px;"></div>
+                                            <div id="strength-bar-4" style="flex: 1; background: #e5e7eb; border-radius: 2px;"></div>
+                                        </div>
+                                        <span id="strength-text" style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted);">Strength: </span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style="margin-bottom: 2.5rem; max-width: 500px;">
+                                    <label
+                                        style="display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--text-main);">Confirm
+                                        New Password</label>
+                                    <input type="password" name="confirmPassword" id="confirmPassword" required
+                                        style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; font-weight: 600;"
+                                        placeholder="Confirm new password">
+                                </div>
+
+                                <button type="submit" class="btn-premium"
+                                    style="padding: 0.75rem 2.5rem; border-radius: 10px; font-weight: 700; display: flex; align-items: center; gap: 0.75rem;">
+                                    <i class="fas fa-shield-alt"></i> Update Password
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" style="position: fixed; bottom: 2rem; right: 2rem; z-index: 9999; display: flex; flex-direction: column; gap: 1rem;"></div>
+
+    <script>
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                padding: 1rem 1.5rem;
+                background: ${type === 'success' ? '#10b981' : '#ef4444'};
+                color: white;
+                border-radius: 12px;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                animation: slideIn 0.3s ease-out forwards;
+            `;
+            
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            toast.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-in forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Handle URL parameters for toasts
+        window.addEventListener('load', () => {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('updated')) showToast('Profile updated successfully!');
+            if (params.has('passwordChanged')) showToast('Password changed successfully!');
+            if (params.has('error')) showToast('Current password verification failed!', 'error');
+            
+            // Auto-switch to password tab if there was a password error
+            if (params.has('passwordChanged') || params.has('error')) {
+                switchTab('changePassword');
+            }
+        });
+
+        function checkPasswordStrength(password) {
+            const wrapper = document.getElementById('password-strength-wrapper');
+            const text = document.getElementById('strength-text');
+            if (!password) {
+                wrapper.style.display = 'none';
+                return;
+            }
+            wrapper.style.display = 'block';
+            
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            const bars = [1, 2, 3, 4].map(i => document.getElementById('strength-bar-' + i));
+            const colors = ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'];
+            const labels = ['Weak', 'Fair', 'Good', 'Strong'];
+            
+            bars.forEach((bar, i) => {
+                bar.style.background = i < strength ? colors[strength - 1] : '#e5e7eb';
+            });
+            
+            text.innerText = 'Strength: ' + (labels[strength - 1] || 'Very Weak');
+            text.style.color = colors[strength - 1] || '#ef4444';
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.style.display = 'none');
+            document.getElementById(tabId).style.display = 'block';
+            document.querySelectorAll('.tab-item').forEach(item => {
+                item.style.color = 'var(--text-muted)';
+                item.style.borderBottom = 'none';
+                item.style.fontWeight = '600';
+            });
+            const activeTab = document.getElementById('tab-' + tabId);
+            activeTab.style.color = 'var(--primary)';
+            activeTab.style.borderBottom = '2px solid var(--primary)';
+            activeTab.style.fontWeight = '700';
+        }
+
+        // Form validation
+        document.querySelector('form[action$="change-password"]').addEventListener('submit', function (e) {
+            const newPass = document.getElementById('newPassword').value;
+            const confirmPass = document.getElementById('confirmPassword').value;
+
+            if (newPass !== confirmPass) {
+                e.preventDefault();
+                showToast('New passwords do not match!', 'error');
+            } else if (newPass.length < 8) {
+                e.preventDefault();
+                showToast('Password must be at least 8 characters long!', 'error');
+            }
+        });
+    </script>
+
+    <style>
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    </style>
+</body>
+
+</html>

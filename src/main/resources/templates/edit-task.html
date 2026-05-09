@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Edit Task - taskqora')}"></head>
+<body>
+    <aside th:replace="~{fragments :: sidebar('tasks', ${user.role})}"></aside>
+    
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-bar-left"></div>
+            <div class="top-bar-actions">
+                <div class="notif-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notif-badge">0</span>
+                </div>
+                <div class="user-profile-top">
+                    <div class="user-avatar-mini" th:text="${user.name.substring(0,1).toUpperCase()}">U</div>
+                    <div class="user-info">
+                        <span class="user-name" th:text="${user.name}">User</span>
+                        <span class="user-role" th:text="${user.role}">Role</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-page">
+            <header class="page-header">
+                <div class="header-text">
+                    <h1>Edit Task</h1>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">
+                        <a th:href="@{/dashboard}" style="color: var(--primary); text-decoration: none;">Dashboard</a> 
+                        <span style="margin: 0 0.5rem;">&gt;</span> 
+                        <a th:href="@{/tasks}" style="color: var(--primary); text-decoration: none;">Tasks</a>
+                        <span style="margin: 0 0.5rem;">&gt;</span> Edit Task
+                    </p>
+                </div>
+            </header>
+
+            <form th:action="@{'/tasks/update/' + ${task.id}}" th:object="${task}" method="POST">
+                <div class="content-grid" style="grid-template-columns: 1fr; align-items: start;">
+                    <div class="side-card" style="padding: 2.5rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                            <div style="width: 40px; height: 40px; background: #fdf2f8; color: #db2777; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0; font-weight: 800;">Task Details</h4>
+                                <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Update the task information below.</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label class="form-label-premium">Task Title <span style="color: #ef4444;">*</span></label>
+                            <input type="text" th:field="*{title}" class="form-input-premium" required>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label class="form-label-premium">Description</label>
+                            <textarea th:field="*{description}" class="form-input-premium" style="min-height: 120px;"></textarea>
+                        </div>
+
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div class="form-group">
+                                <label class="form-label-premium">Project <span style="color: #ef4444;">*</span></label>
+                                <select th:field="*{project.id}" class="form-select-premium" required>
+                                    <option th:each="p : ${projects}" th:value="${p.id}" th:text="${p.title}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label-premium">Assigned To</label>
+                                <select th:field="*{assignedTo.id}" class="form-select-premium">
+                                    <option value="">Unassigned</option>
+                                    <option th:each="u : ${users}" th:value="${u.id}" th:text="${u.name}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div class="form-group">
+                                <label class="form-label-premium">Status <span style="color: #ef4444;">*</span></label>
+                                <select th:field="*{status}" class="form-select-premium">
+                                    <option value="PENDING">Pending</option>
+                                    <option value="IN_PROGRESS">In Progress</option>
+                                    <option value="REVIEW">Review</option>
+                                    <option value="COMPLETED">Completed</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label-premium">Priority <span style="color: #ef4444;">*</span></label>
+                                <select th:field="*{priority}" class="form-select-premium">
+                                    <option value="Low">Low</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="High">High</option>
+                                    <option value="Critical">Critical</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label-premium">Due Date <span style="color: #ef4444;">*</span></label>
+                                <input type="date" th:field="*{dueDate}" class="form-input-premium" required>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
+                            <a th:href="@{/tasks}" class="btn-premium" style="background: white; color: var(--text-main); border: 1px solid var(--border-color);">Cancel</a>
+                            <button type="submit" class="btn-premium">Update Task</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <style>
+        .form-label-premium {
+            display: block;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-main);
+        }
+        .form-input-premium, .form-select-premium {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            outline: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            background: #fcfdfe;
+        }
+        .form-input-premium:focus, .form-select-premium:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+        .form-select-premium {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.1em;
+        }
+    </style>
+</body>
+</html>
+

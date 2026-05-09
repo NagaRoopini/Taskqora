@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Settings - taskqora')}"></head>
+
+<body>
+    <aside th:replace="~{fragments :: sidebar('settings', ${user.role})}"></aside>
+
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+            </div>
+            <div class="top-bar-actions">
+                <div class="notif-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notif-badge">0</span>
+                </div>
+                <div class="user-profile-top">
+                    <div class="user-avatar-mini"
+                        th:text="${user.name != null && !user.name.isEmpty() ? user.name.substring(0,1).toUpperCase() : 'U'}">U</div>
+                    <div class="user-info">
+                        <span class="user-name" th:text="${user.name}">User</span>
+                        <span class="user-role" th:text="${user.role}">Role</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-page">
+            <header class="page-header">
+                <div class="header-text">
+                    <h1>System Settings</h1>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">
+                        <a th:href="@{/dashboard}" style="color: var(--primary); text-decoration: none;">Dashboard</a>
+                        <span style="margin: 0 0.5rem;">&gt;</span> Settings
+                    </p>
+                </div>
+            </header>
+
+            <div class="settings-container" style="display: grid; grid-template-columns: 280px 1fr; gap: 2rem; align-items: start;">
+                <!-- Settings Sidebar -->
+                <nav class="side-card" style="padding: 1.5rem 1rem;">
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li>
+                            <div class="settings-nav-item active" onclick="showSection('account')" id="nav-account">
+                                <i class="far fa-user-circle"></i> Account
+                            </div>
+                        </li>
+                        <li>
+                            <div class="settings-nav-item" onclick="showSection('preferences')" id="nav-preferences">
+                                <i class="fas fa-sliders-h"></i> Preferences
+                            </div>
+                        </li>
+                        <li>
+                            <div class="settings-nav-item" onclick="showSection('notifications')" id="nav-notifications">
+                                <i class="far fa-bell"></i> Notifications
+                            </div>
+                        </li>
+                        <li>
+                            <div class="settings-nav-item" onclick="showSection('security')" id="nav-security">
+                                <i class="fas fa-shield-alt"></i> Security
+                            </div>
+                        </li>
+                        <li style="margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                            <div class="settings-nav-item danger" onclick="showSection('danger')" id="nav-danger" style="color: #ef4444;">
+                                <i class="fas fa-exclamation-triangle"></i> Danger Zone
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- Settings Content Area -->
+                <div class="settings-content-wrapper">
+                    <!-- Account Section -->
+                    <div id="section-account" class="settings-section side-card active">
+                        <h3 style="margin-bottom: 0.5rem; font-weight: 800;">Account Overview</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">Manage your basic account status and profile shortcuts.</p>
+                        
+                        <div class="settings-row" style="padding: 1.5rem; background: var(--bg-light); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+                            <div style="display: flex; align-items: center; gap: 1.25rem;">
+                                <div style="width: 50px; height: 50px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: 800;" th:text="${user.name.substring(0,1).toUpperCase()}">R</div>
+                                <div>
+                                    <h4 th:text="${user.name}" style="margin: 0; font-weight: 700;">Name</h4>
+                                    <p th:text="${user.email}" style="margin: 0; color: var(--text-muted); font-size: 0.85rem;">Email</p>
+                                </div>
+                            </div>
+                            <a th:href="@{/profile}" class="btn-premium" style="font-size: 0.85rem; padding: 0.5rem 1.25rem;">Edit Profile</a>
+                        </div>
+
+                        <div class="settings-group" style="margin-bottom: 2rem;">
+                            <label style="display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 1rem;">Work Status</label>
+                            <form th:action="@{/settings/update-status}" method="POST" id="status-form">
+                                <input type="hidden" name="status" id="status-input">
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                                    <div class="status-option" th:classappend="${user.status == 'ACTIVE' ? 'active' : ''}" onclick="submitStatus('ACTIVE')">
+                                        <div class="status-dot" style="background: #10b981;"></div> Active
+                                    </div>
+                                    <div class="status-option" th:classappend="${user.status == 'BUSY' ? 'active' : ''}" onclick="submitStatus('BUSY')">
+                                        <div class="status-dot" style="background: #f59e0b;"></div> Busy
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div style="border-top: 1px solid var(--border-color); padding-top: 1.5rem; display: flex; justify-content: flex-end;">
+                             <a th:href="@{/logout}" class="btn-premium" style="background: white; color: var(--text-main); border: 1px solid var(--border-color); font-size: 0.85rem;">
+                                <i class="fas fa-sign-out-alt"></i> Logout Account
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Preferences Section -->
+                    <div id="section-preferences" class="settings-section side-card" style="display: none;">
+                        <h3 style="margin-bottom: 0.5rem; font-weight: 800;">Application Preferences</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">Customize how you interact with the platform.</p>
+                        
+                        <form th:action="@{/settings/update-preferences}" method="POST">
+                            <div class="settings-group" style="margin-bottom: 2rem;">
+                                <label style="display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 1rem;">Appearance (Theme)</label>
+                                <div style="display: flex; gap: 1.5rem;">
+                                    <label class="theme-card">
+                                        <input type="radio" name="theme" value="LIGHT" th:checked="${user.theme == 'LIGHT'}" style="display: none;">
+                                        <div class="theme-preview light">
+                                            <div style="width: 100%; height: 60%; background: #f8fafc;"></div>
+                                            <div style="width: 100%; height: 40%; background: #ffffff; border-top: 1px solid #e2e8f0;"></div>
+                                        </div>
+                                        <span style="font-size: 0.85rem; font-weight: 700; margin-top: 0.5rem;">Light Mode</span>
+                                    </label>
+                                    <label class="theme-card">
+                                        <input type="radio" name="theme" value="DARK" th:checked="${user.theme == 'DARK'}" style="display: none;">
+                                        <div class="theme-preview dark">
+                                            <div style="width: 100%; height: 60%; background: #0f172a;"></div>
+                                            <div style="width: 100%; height: 40%; background: #1e293b; border-top: 1px solid #334155;"></div>
+                                        </div>
+                                        <span style="font-size: 0.85rem; font-weight: 700; margin-top: 0.5rem;">Dark Mode</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-premium">Update Preferences</button>
+                        </form>
+                    </div>
+
+                    <!-- Notifications Section -->
+                    <div id="section-notifications" class="settings-section side-card" style="display: none;">
+                        <h3 style="margin-bottom: 0.5rem; font-weight: 800;">Manage Notifications</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">Choose which updates you want to receive.</p>
+                        
+                        <form th:action="@{/settings/update-preferences}" method="POST">
+                            <!-- Hidden theme field to keep it consistent on save -->
+                            <input type="hidden" name="theme" th:value="${user.theme}">
+                            
+                            <div class="notif-row">
+                                <div class="notif-info">
+                                    <h5 style="margin: 0 0 0.25rem; font-weight: 700;">Email Notifications</h5>
+                                    <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">Receive project updates and task reminders via email.</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" name="emailNotifications" th:checked="${user.emailNotifications}">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+
+                            <div class="notif-row">
+                                <div class="notif-info">
+                                    <h5 style="margin: 0 0 0.25rem; font-weight: 700;">Desktop Notifications</h5>
+                                    <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">Get real-time browser alerts for immediate activity.</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" name="desktopNotifications" th:checked="${user.desktopNotifications}">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+
+                            <div class="notif-row">
+                                <div class="notif-info">
+                                    <h5 style="margin: 0 0 0.25rem; font-weight: 700;">Weekly Summary</h5>
+                                    <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">A weekly performance report sent to your inbox.</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" checked disabled>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn-premium" style="margin-top: 2rem;">Save Notification Settings</button>
+                        </form>
+                    </div>
+
+                    <!-- Security Section -->
+                    <div id="section-security" class="settings-section side-card" style="display: none;">
+                        <h3 style="margin-bottom: 0.5rem; font-weight: 800;">Security Settings</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">Keep your account secure with advanced protection.</p>
+                        
+                        <div class="settings-group" style="margin-bottom: 2.5rem; padding: 1.5rem; background: #eff6ff; border-radius: 12px; border: 1px solid #bfdbfe;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="display: flex; gap: 1rem; align-items: center;">
+                                    <div style="width: 40px; height: 40px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary);">
+                                        <i class="fas fa-key"></i>
+                                    </div>
+                                    <div>
+                                        <h5 style="margin: 0; font-weight: 700;">Two-Factor Authentication (2FA)</h5>
+                                        <p style="margin: 0; font-size: 0.8rem; color: #1e40af;">Add an extra layer of security to your account.</p>
+                                    </div>
+                                </div>
+                                <form th:action="@{/settings/toggle-2fa}" method="POST">
+                                    <button type="submit" class="btn-premium" style="font-size: 0.85rem; padding: 0.5rem 1.25rem;" 
+                                            th:text="${user.twoFactorEnabled ? 'Disable 2FA' : 'Enable 2FA'}"
+                                            th:styleappend="${user.twoFactorEnabled ? 'background: #ef4444;' : ''}">Enable</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="settings-group">
+                            <label style="display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 1.5rem;">Recent Login Activity</label>
+                            <div style="background: var(--bg-light); border-radius: 12px; overflow: hidden;">
+                                <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                                    <thead style="background: rgba(0,0,0,0.05);">
+                                        <tr>
+                                            <th style="padding: 1rem; text-align: left;">Browser / Device</th>
+                                            <th style="padding: 1rem; text-align: left;">Location</th>
+                                            <th style="padding: 1rem; text-align: left;">Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="padding: 1rem; border-top: 1px solid var(--border-color);">
+                                                <i class="fab fa-chrome" style="color: #4285F4; margin-right: 0.5rem;"></i> Chrome on Windows
+                                            </td>
+                                            <td style="padding: 1rem; border-top: 1px solid var(--border-color);">Hyderabad, India (Current)</td>
+                                            <td style="padding: 1rem; border-top: 1px solid var(--border-color);">Just now</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 1rem; border-top: 1px solid var(--border-color);">
+                                                <i class="fas fa-mobile-alt" style="margin-right: 0.5rem;"></i> iPhone 15 Pro
+                                            </td>
+                                            <td style="padding: 1rem; border-top: 1px solid var(--border-color);">Bengaluru, India</td>
+                                            <td style="padding: 1rem; border-top: 1px solid var(--border-color);">2 days ago</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Danger Zone Section -->
+                    <div id="section-danger" class="settings-section side-card" style="display: none;">
+                        <h3 style="margin-bottom: 0.5rem; font-weight: 800; color: #ef4444;">Danger Zone</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">Critical actions that cannot be undone.</p>
+                        
+                        <div class="danger-box" style="padding: 1.5rem; border: 1px solid #fecaca; background: #fff1f2; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h5 style="margin: 0 0 0.25rem; font-weight: 700; color: #991b1b;">Delete this account</h5>
+                                <p style="margin: 0; font-size: 0.8rem; color: #b91c1c;">Once you delete your account, there is no going back. Please be certain.</p>
+                            </div>
+                            <button type="button" class="btn-premium" onclick="showDeleteModal()" style="background: #ef4444; border: none; font-size: 0.85rem;">Delete Account</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Delete Account Modal -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 450px; text-align: center; padding: 3rem 2rem;">
+            <div style="width: 80px; height: 80px; background: #fee2e2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 2.5rem; color: #ef4444;"></i>
+            </div>
+            <h2 style="margin-bottom: 1rem; font-weight: 800;">Delete Account?</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2.5rem; line-height: 1.6;">Are you sure you want to delete your account? This action is permanent and all your data will be lost forever.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button onclick="hideDeleteModal()" class="btn-premium" style="background: white; color: var(--text-main); border: 1px solid var(--border-color); flex: 1;">Cancel</button>
+                <form th:action="@{/profile/delete-self}" method="POST" style="flex: 1;">
+                    <button type="submit" class="btn-premium" style="background: #ef4444; border: none; width: 100%;">Delete Forever</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" style="position: fixed; bottom: 2rem; right: 2rem; z-index: 9999; display: flex; flex-direction: column; gap: 1rem;"></div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.settings-section').forEach(sec => sec.style.display = 'none');
+            // Show target section
+            document.getElementById('section-' + sectionId).style.display = 'block';
+            
+            // Update nav styles
+            document.querySelectorAll('.settings-nav-item').forEach(nav => nav.classList.remove('active'));
+            document.getElementById('nav-' + sectionId).classList.add('active');
+        }
+
+        function showDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+        function hideDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        function submitStatus(status) {
+            document.getElementById('status-input').value = status;
+            document.getElementById('status-form').submit();
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                padding: 1rem 1.5rem;
+                background: ${type === 'success' ? '#10b981' : '#ef4444'};
+                color: white;
+                border-radius: 12px;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                animation: slideIn 0.3s ease-out forwards;
+            `;
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            toast.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-in forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        window.addEventListener('load', () => {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('updated')) showToast('Preferences updated!');
+            if (params.has('statusUpdated')) showToast('Work status updated!');
+            if (params.has('2faChanged')) {
+                showToast('2FA settings updated!');
+                showSection('security');
+            }
+
+            // Real-time theme switching
+            document.querySelectorAll('input[name="theme"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    if (e.target.value === 'DARK') {
+                        document.documentElement.classList.add('dark-theme');
+                    } else {
+                        document.documentElement.classList.remove('dark-theme');
+                    }
+                });
+            });
+        });
+    </script>
+
+    <style>
+        .settings-nav-item {
+            padding: 0.85rem 1.25rem;
+            border-radius: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .settings-nav-item:hover {
+            background: var(--bg-light);
+            color: var(--text-main);
+        }
+
+        .settings-nav-item.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+
+        .status-option {
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .status-option.active {
+            border-color: var(--primary);
+            background: #eef2ff;
+            color: var(--primary);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .theme-card {
+            flex: 1;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .theme-preview {
+            width: 100%;
+            height: 80px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .theme-card input:checked + .theme-preview {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .notif-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .admin-feature-card {
+            padding: 1.5rem;
+            border-radius: 16px;
+            background: white;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .admin-feature-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .admin-feature-card i {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .admin-feature-card h5 {
+            margin: 0 0 0.5rem;
+            font-weight: 800;
+        }
+
+        .admin-feature-card p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+        }
+
+        .btn-premium.secondary {
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+
+        /* Switch Styling */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e2e8f0;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+        .settings-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: white;
+            font-weight: 600;
+            outline: none;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: modalScale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalScale {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    </style>
+</body>
+
+</html>

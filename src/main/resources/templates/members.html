@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Team Members - taskqora')}"></head>
+<body>
+    <aside th:replace="~{fragments :: sidebar('members', ${user.role})}"></aside>
+    
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+            </div>
+            <div class="top-bar-actions">
+                <div class="notif-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notif-badge">0</span>
+                </div>
+                <div class="user-profile-top">
+                    <div class="user-avatar-mini" th:text="${user.name.substring(0,1).toUpperCase()}">U</div>
+                    <div class="user-info">
+                        <span class="user-name" th:text="${user.name}">User</span>
+                        <span class="user-role" th:text="${user.role}">Role</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-page">
+            <header class="page-header">
+                <div class="header-text">
+                    <h1>Team Members</h1>
+                    <p>Manage your team members and their roles.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-premium" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none; border: none; cursor: pointer;">
+                        <i class="fas fa-user-plus"></i> Invite Member
+                    </button>
+                </div>
+            </header>
+
+            <!-- Summary Cards -->
+            <div class="summary-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 2rem;">
+                <div class="summary-card card-indigo">
+                    <div class="summary-header">
+                        <div class="summary-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="summary-details">
+                            <h3 th:text="${totalMembers}">0</h3>
+                            <p>Total Members</p>
+                        </div>
+                    </div>
+                    <div class="summary-footer">Total staff</div>
+                </div>
+                <div class="summary-card card-green">
+                    <div class="summary-header">
+                        <div class="summary-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="summary-details">
+                            <h3 th:text="${activeCount}">0</h3>
+                            <p>Active Members</p>
+                        </div>
+                    </div>
+                    <div class="summary-footer">Currently online</div>
+                </div>
+                <div class="summary-card card-blue">
+                    <div class="summary-header">
+                        <div class="summary-icon">
+                            <i class="fas fa-user-clock"></i>
+                        </div>
+                        <div class="summary-details">
+                            <h3 th:text="${leaveCount}">0</h3>
+                            <p>On Leave</p>
+                        </div>
+                    </div>
+                    <div class="summary-footer">Away from office</div>
+                </div>
+                <div class="summary-card card-orange">
+                    <div class="summary-header">
+                        <div class="summary-icon">
+                            <i class="fas fa-user-slash"></i>
+                        </div>
+                        <div class="summary-details">
+                            <h3 th:text="${inactiveCount}">0</h3>
+                            <p>Inactive Members</p>
+                        </div>
+                    </div>
+                    <div class="summary-footer">Account disabled</div>
+                </div>
+            </div>
+
+            <!-- Filters Area -->
+            <div class="filters-bar" style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem;">
+                <div class="filters-right" style="display: flex; gap: 0.75rem;">
+                    <select class="filter-select" id="roleFilter" style="height: 42px;">
+                        <option value="All">All Roles</option>
+                        <option value="ADMIN">ADMIN</option>
+                        <option value="MEMBER">MEMBER</option>
+                    </select>
+                    <select class="filter-select" id="statusFilter" style="height: 42px;">
+                        <option value="All">All Status</option>
+                        <option value="ACTIVE">ACTIVE</option>
+                        <option value="BUSY">BUSY</option>
+                        <option value="ON LEAVE">ON LEAVE</option>
+                        <option value="INACTIVE">INACTIVE</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Members Table / Empty State -->
+            <div class="side-card" style="padding: 0; overflow: hidden; min-height: 400px;">
+                <div class="table-responsive">
+                    <table class="table-premium" style="margin: 0; border-spacing: 0; width: 100%; table-layout: fixed;">
+                        <thead>
+                            <tr style="background: var(--bg-light);">
+                                <th style="padding: 1.25rem 1.5rem; width: 25%;">Member</th>
+                                <th style="width: 15%;">Role</th>
+                                <th style="width: 25%;">Email</th>
+                                <th style="width: 15%;">Status</th>
+                                <th style="width: 10%; text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="member : ${members}" style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 1.5rem 1.5rem;">
+                                    <div style="display: flex; align-items: center; gap: 1rem;">
+                                        <div class="avatar-circle-sm" style="width: 36px; height: 36px; font-size: 0.9rem;" 
+                                             th:text="${member.name != null && !member.name.isEmpty() ? member.name.substring(0,1).toUpperCase() : 'M'}">M</div>
+                                        <div style="font-weight: 700; color: var(--text-main); font-size: 0.95rem;" th:text="${member.name}">Member</div>
+                                    </div>
+                                </td>
+                                <td style="font-weight: 600; color: var(--text-muted);" th:text="${member.role}">Role</td>
+                                <td style="color: var(--text-muted);" th:text="${member.email}">Email</td>
+                                <td>
+                                    <span th:class="'badge-status status-' + ${#strings.toLowerCase(member.status != null ? member.status.replace(' ', '_') : 'active')}"
+                                          th:text="${member.status != null ? member.status : 'ACTIVE'}">ACTIVE</span>
+                                </td>
+                                <td style="text-align: right; padding-right: 1.5rem;">
+                                    <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+                                        <a th:if="${member.id != user.id}" href="javascript:void(0)" 
+                                           class="page-btn" 
+                                           style="width: 32px; height: 32px; color: #ef4444; border-color: rgba(239, 68, 68, 0.2);" 
+                                           th:onclick="'showMemberDeleteModal(' + ${member.id} + ')'"
+                                           title="Delete Member">
+                                            <i class="fas fa-user-minus"></i>
+                                        </a>
+                                        <span th:if="${member.id == user.id}" style="font-size: 0.65rem; color: var(--text-muted); font-weight: 800; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; display: flex; align-items: center;">YOU</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State (Only shows if members list was somehow empty, but current user is always there) -->
+                <div th:if="${members.empty}" class="empty-state">
+                    <i class="fas fa-users" style="font-size: 5rem; color: var(--primary); opacity: 0.1; margin-bottom: 1.5rem;"></i>
+                    <h3 style="margin-bottom: 0.5rem; font-weight: 800;">No team members found</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 2rem;">Add team members to collaborate and assign tasks.</p>
+                </div>
+
+                <!-- Pagination Footer -->
+                <div class="table-footer">
+                    <div class="footer-info">
+                        Showing <span th:text="${members.size() > 0 ? 1 : 0}">0</span> to <span th:text="${members.size()}">0</span> of <span th:text="${members.size()}">0</span> members
+                    </div>
+                    <div class="pagination">
+                        <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Delete Confirmation Modal -->
+    <div id="memberDeleteModal" class="modal-overlay">
+        <div class="modal-content-premium">
+            <div class="modal-header-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Delete Member?</h3>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove this team member? <strong>This action cannot be undone.</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeMemberDeleteModal()" class="btn-secondary-premium">Cancel</button>
+                <button id="confirmMemberDeleteBtn" class="btn-danger-premium">Delete Member</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .filters-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .filters-right { display: flex; gap: 0.75rem; }
+        
+        .filter-select {
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: white;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.85rem;
+            outline: none;
+            min-width: 140px;
+        }
+
+        .search-mini {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .search-mini i {
+            position: absolute;
+            left: 1rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .search-mini input {
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: white;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        .avatar-circle-sm {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #eef2ff;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 1px solid var(--border-color);
+        }
+
+        .badge-status {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .status-active { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .status-busy { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+        .status-on_leave { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+        .status-inactive { background: rgba(100, 116, 139, 0.1); color: #64748b; }
+
+        .empty-state {
+            padding: 5rem 2rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .table-footer {
+            padding: 1.25rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+        }
+
+        .footer-info { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+        
+        .pagination { display: flex; gap: 0.5rem; }
+        .page-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: white;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .page-btn.active { background: #eef2ff; color: var(--primary); border-color: var(--primary); font-weight: 700; }
+        .page-btn:hover:not(.active) { background: var(--bg-light); }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-content-premium {
+            background: white;
+            width: 450px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            transform: scale(0.9);
+            animation: slideUp 0.3s forwards cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { to { transform: scale(1); } }
+        
+        .modal-header-danger {
+            padding: 2rem 2rem 1rem;
+            text-align: center;
+            color: #ef4444;
+        }
+        .modal-header-danger i { font-size: 3rem; margin-bottom: 1rem; }
+        .modal-header-danger h3 { font-size: 1.5rem; font-weight: 800; color: #1e293b; margin: 0; }
+        
+        .modal-body { padding: 0 2.5rem 1.5rem; text-align: center; }
+        .modal-body p { color: #64748b; line-height: 1.6; font-size: 0.95rem; margin: 0; }
+        
+        .modal-footer {
+            padding: 1.5rem 2rem 2rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        .btn-secondary-premium {
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #64748b;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-danger-premium {
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            border: none;
+            background: #ef4444;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            transition: all 0.2s;
+        }
+        .btn-danger-premium:hover { background: #dc2626; transform: translateY(-2px); }
+        .btn-secondary-premium:hover { background: #f8fafc; color: #1e293b; }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('memberSearchInput');
+            const roleFilter = document.getElementById('roleFilter');
+            const statusFilter = document.getElementById('statusFilter');
+            const tableRows = document.querySelectorAll('.table-premium tbody tr');
+
+            function filterMembers() {
+                const searchText = searchInput.value.toLowerCase();
+                const selectedRole = roleFilter.value;
+                const selectedStatus = statusFilter.value;
+
+                tableRows.forEach(row => {
+                    if (row.classList.contains('empty-state')) return;
+                    
+                    const name = row.cells[0].textContent.toLowerCase();
+                    const role = row.cells[1].textContent.trim();
+                    const email = row.cells[2].textContent.toLowerCase();
+                    const status = row.cells[3].textContent.trim();
+
+                    const matchesSearch = name.includes(searchText) || email.includes(searchText);
+                    const matchesRole = selectedRole === 'All' || role === selectedRole;
+                    const matchesStatus = selectedStatus === 'All' || status === selectedStatus;
+
+                    if (matchesSearch && matchesRole && matchesStatus) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+
+            searchInput.addEventListener('input', filterMembers);
+            roleFilter.addEventListener('change', filterMembers);
+            statusFilter.addEventListener('change', filterMembers);
+        });
+
+        let deleteMemberId = null;
+        function showMemberDeleteModal(id) {
+            deleteMemberId = id;
+            document.getElementById('memberDeleteModal').style.display = 'flex';
+        }
+
+        function closeMemberDeleteModal() {
+            document.getElementById('memberDeleteModal').style.display = 'none';
+        }
+
+        document.getElementById('confirmMemberDeleteBtn').addEventListener('click', () => {
+            if (deleteMemberId) {
+                window.location.href = '/members/delete/' + deleteMemberId;
+            }
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeMemberDeleteModal();
+        });
+    </script>
+</body>
+</html>
+

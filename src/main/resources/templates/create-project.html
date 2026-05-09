@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Create New Project - taskqora')}"></head>
+<body>
+    <aside th:replace="~{fragments :: sidebar('projects', ${user.role})}"></aside>
+    
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+            </div>
+            <div class="top-bar-actions">
+                <div class="notif-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notif-badge">0</span>
+                </div>
+                <div class="user-profile-top">
+                    <div class="user-avatar-mini" th:text="${user.name.substring(0,1).toUpperCase()}">U</div>
+                    <div class="user-info">
+                        <span class="user-name" th:text="${user.name}">User</span>
+                        <span class="user-role" th:text="${user.role}">Role</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-page">
+            <header class="page-header">
+                <div class="header-text">
+                    <h1>Create New Project</h1>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">
+                        <a th:href="@{/dashboard}" style="color: var(--primary); text-decoration: none;">Dashboard</a> 
+                        <span style="margin: 0 0.5rem;">&gt;</span> 
+                        <a th:href="@{/projects}" style="color: var(--primary); text-decoration: none;">Projects</a>
+                        <span style="margin: 0 0.5rem;">&gt;</span> Create New Project
+                    </p>
+                </div>
+            </header>
+
+            <form th:action="@{/projects/create}" th:object="${project}" method="POST">
+                <div class="content-grid" style="grid-template-columns: 1fr; align-items: start; gap: 2rem;">
+                    <!-- Left: Project Details -->
+                    <div class="side-card" style="padding: 2.5rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                            <div style="width: 40px; height: 40px; background: #eef2ff; color: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0; font-weight: 800;">Project Details</h4>
+                                <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Add basic information about the project.</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label class="form-label-premium">Project Name <span style="color: #ef4444;">*</span></label>
+                            <input type="text" th:field="*{title}" class="form-input-premium" placeholder="Enter project name" required>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label class="form-label-premium">Project Description</label>
+                            <textarea th:field="*{description}" class="form-input-premium" style="min-height: 120px;" placeholder="Enter project description..."></textarea>
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Briefly describe the purpose and goals of this project.</p>
+                        </div>
+
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div class="form-group">
+                                <label class="form-label-premium">Project Status <span style="color: #ef4444;">*</span></label>
+                                <select th:field="*{status}" class="form-select-premium">
+                                    <option value="Planning">Planning</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="On Hold">On Hold</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label-premium">Category</label>
+                                <select th:field="*{category}" class="form-select-premium">
+                                    <option value="">Select category</option>
+                                    <option value="Web Development">Web Development</option>
+                                    <option value="Mobile App">Mobile App</option>
+                                    <option value="Design">Design</option>
+                                    <option value="Marketing">Marketing</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div class="form-group">
+                                <label class="form-label-premium">Start Date <span style="color: #ef4444;">*</span></label>
+                                <input type="date" th:field="*{startDate}" class="form-input-premium" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label-premium">End Date</label>
+                                <input type="date" th:field="*{endDate}" class="form-input-premium">
+                            </div>
+                        </div>
+
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr; gap: 1.5rem;">
+                            <div class="form-group">
+                                <label class="form-label-premium">Priority</label>
+                                <select th:field="*{priority}" class="form-select-premium">
+                                    <option value="Low">Low</option>
+                                    <option value="Medium" selected>Medium</option>
+                                    <option value="High">High</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom: Assign Team Members -->
+                <div class="side-card" style="margin-top: 2rem; padding: 2.5rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                        <div style="width: 40px; height: 40px; background: #eef2ff; color: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <h4 style="margin: 0; font-weight: 800;">Assign Team Members</h4>
+                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Add team members who will be working on this project.</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                        <select id="memberSelect" class="form-select-premium" style="flex: 1;">
+                            <option value="">Search and select team members</option>
+                            <option th:each="u : ${allUsers}" th:value="${u.id}" th:text="${u.name}" th:data-email="${u.email}" th:data-role="${u.role}">User Name</option>
+                        </select>
+                        <button type="button" onclick="addMember()" class="btn-premium" style="background: white; color: var(--primary); border: 1px solid var(--primary); white-space: nowrap;">
+                            <i class="fas fa-plus"></i> Add Member
+                        </button>
+                    </div>
+
+                    <div id="membersList" style="display: flex; flex-wrap: wrap; gap: 1rem; padding: 2rem; border: 1px dashed var(--border-color); border-radius: 12px; min-height: 150px; align-items: center; justify-content: center;">
+                        <div id="noMembersPlaceholder" style="text-align: center;">
+                            <i class="fas fa-user-group" style="font-size: 3rem; color: var(--text-muted); opacity: 0.2; margin-bottom: 1.5rem;"></i>
+                            <h4 style="margin: 0; color: var(--text-muted);">No members added yet.</h4>
+                            <p style="margin: 0.5rem 0 0; font-size: 0.85rem; color: var(--text-muted);">Search and add team members to assign them to this project.</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
+                        <a th:href="@{/projects}" class="btn-premium" style="background: white; color: var(--text-main); border: 1px solid var(--border-color);">Cancel</a>
+                        <button type="submit" class="btn-premium">Create Project</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        const addedMembers = new Set();
+
+        function addMember() {
+            const select = document.getElementById('memberSelect');
+            const memberId = select.value;
+            if (!memberId) return;
+
+            if (addedMembers.has(memberId)) {
+                alert('Member already added!');
+                return;
+            }
+
+            const option = select.options[select.selectedIndex];
+            const memberName = option.text;
+            const memberRole = option.getAttribute('data-role');
+
+            const membersList = document.getElementById('membersList');
+            const placeholder = document.getElementById('noMembersPlaceholder');
+
+            if (placeholder) {
+                placeholder.remove();
+                membersList.style.justifyContent = 'flex-start';
+                membersList.style.alignItems = 'flex-start';
+            }
+
+            const memberBadge = document.createElement('div');
+            memberBadge.className = 'member-badge-premium';
+            memberBadge.style = `
+                display: flex; 
+                align-items: center; 
+                gap: 0.75rem; 
+                background: #f8fafc; 
+                border: 1px solid var(--border-color); 
+                padding: 0.5rem 1rem; 
+                border-radius: 50px;
+                animation: slideIn 0.3s ease;
+            `;
+            memberBadge.innerHTML = `
+                <div style="width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700;">
+                    ${memberName.substring(0,1).toUpperCase()}
+                </div>
+                <div>
+                    <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); line-height: 1;">${memberName}</div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted);">${memberRole}</div>
+                </div>
+                <button type="button" onclick="removeMember('${memberId}', this)" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 0.25rem;">
+                    <i class="fas fa-times"></i>
+                </button>
+                <input type="hidden" name="teamMembers" value="${memberId}">
+            `;
+
+            membersList.appendChild(memberBadge);
+            addedMembers.add(memberId);
+            select.value = '';
+        }
+
+        function removeMember(memberId, btn) {
+            btn.parentElement.remove();
+            addedMembers.delete(memberId);
+
+            const membersList = document.getElementById('membersList');
+            if (membersList.children.length === 0) {
+                membersList.style.justifyContent = 'center';
+                membersList.style.alignItems = 'center';
+                membersList.innerHTML = `
+                    <div id="noMembersPlaceholder" style="text-align: center;">
+                        <i class="fas fa-user-group" style="font-size: 3rem; color: var(--text-muted); opacity: 0.2; margin-bottom: 1.5rem;"></i>
+                        <h4 style="margin: 0; color: var(--text-muted);">No members added yet.</h4>
+                        <p style="margin: 0.5rem 0 0; font-size: 0.85rem; color: var(--text-muted);">Search and add team members to assign them to this project.</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+
+    <style>
+        .form-label-premium {
+            display: block;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-main);
+        }
+        .form-input-premium, .form-select-premium {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            outline: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            background: white;
+            color: var(--text-main);
+        }
+        .form-input-premium:focus, .form-select-premium:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+        .form-select-premium {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.1em;
+        }
+    </style>
+</body>
+</html>
+

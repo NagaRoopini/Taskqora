@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Create New Task - taskqora')}"></head>
+<body>
+    <aside th:replace="~{fragments :: sidebar('tasks', ${user.role})}"></aside>
+    
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+            </div>
+            <div class="top-bar-actions">
+                <div class="notif-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notif-badge">0</span>
+                </div>
+                <div class="user-profile-top">
+                    <div class="user-avatar-mini" th:text="${user.name.substring(0,1).toUpperCase()}">U</div>
+                    <div class="user-info">
+                        <span class="user-name" th:text="${user.name}">User</span>
+                        <span class="user-role" th:text="${user.role}">ADMINISTRATOR</span>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size: 0.7rem; color: var(--text-muted);"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-page">
+            <header class="page-header" style="flex-direction: column; align-items: flex-start; gap: 0.5rem; margin-bottom: 2.5rem;">
+                <h1 style="font-size: 2rem; font-weight: 800; letter-spacing: -0.02em;">Create New Task</h1>
+                <nav class="breadcrumbs">
+                    <a th:href="@{/dashboard}">Dashboard</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <a th:href="@{/tasks}">Tasks</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Create New Task</span>
+                </nav>
+            </header>
+
+            <div class="form-container-premium">
+                <form th:action="@{/tasks/create}" th:object="${task}" method="post">
+                    <div class="form-section">
+                        <h3 class="section-title">Task Information</h3>
+                        <p class="section-subtitle">Fill in the details to create a new task.</p>
+                        
+                        <div class="form-grid">
+                            <div class="form-group full-mobile">
+                                <label>Task Title <span class="required">*</span></label>
+                                <input type="text" th:field="*{title}" class="form-input-premium" placeholder="Enter task title" required>
+                            </div>
+                            <div class="form-group full-mobile">
+                                <label>Project <span class="required">*</span></label>
+                                <select th:field="*{project.id}" class="form-select-premium" required>
+                                    <option value="" disabled selected>Select project</option>
+                                    <option th:each="p : ${projects}" th:value="${p.id}" th:text="${p.title}"></option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label>Task Description</label>
+                                <textarea th:field="*{description}" class="form-textarea-premium" placeholder="Enter task description..." rows="5"></textarea>
+                                <div class="char-count">0 / 1000</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Priority <span class="required">*</span></label>
+                                <div class="select-with-icon">
+                                    <span class="priority-dot medium"></span>
+                                    <select th:field="*{priority}" class="form-select-premium" required>
+                                        <option value="Low">Low</option>
+                                        <option value="Medium" selected>Medium</option>
+                                        <option value="High">High</option>
+                                        <option value="Critical">Critical</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Status <span class="required">*</span></label>
+                                <div class="select-with-icon">
+                                    <span class="status-dot in-progress"></span>
+                                    <select th:field="*{status}" class="form-select-premium" required>
+                                        <option value="PENDING">Pending</option>
+                                        <option value="IN_PROGRESS" selected>In Progress</option>
+                                        <option value="REVIEW">Review</option>
+                                        <option value="COMPLETED">Completed</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Due Date <span class="required">*</span></label>
+                                <div class="input-with-icon">
+                                    <i class="far fa-calendar-alt"></i>
+                                    <input type="date" th:field="*{dueDate}" class="form-input-premium" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Assigned To</label>
+                                <select th:field="*{assignedTo.id}" class="form-select-premium">
+                                    <option value="" disabled selected>Select team member</option>
+                                    <option th:each="u : ${users}" th:value="${u.id}" th:text="${u.name}"></option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Estimated Hours</label>
+                                <div class="input-with-icon">
+                                    <i class="far fa-clock"></i>
+                                    <input type="number" step="0.5" class="form-input-premium" placeholder="Enter estimated hours (e.g., 5)">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Task Category</label>
+                                <select class="form-select-premium">
+                                    <option value="" disabled selected>Select category</option>
+                                    <option value="Development">Development</option>
+                                    <option value="Design">Design</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="QA">QA</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary-premium" onclick="history.back()">Cancel</button>
+                        <button type="submit" class="btn-primary-premium">
+                            <i class="far fa-file-alt"></i> Create Task
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <style>
+        .form-container-premium {
+            background: white;
+            border-radius: 24px;
+            padding: 2.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            max-width: 1200px;
+        }
+
+        .form-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .form-group.full-width {
+            grid-column: span 3;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .required { color: var(--danger); }
+
+        .form-input-premium, .form-select-premium, .form-textarea-premium {
+            width: 100%;
+            padding: 0.85rem 1.25rem;
+            border-radius: 12px;
+            border: 1.5px solid #edf2f7;
+            background: #fcfdfe;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-main);
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .form-input-premium:focus, .form-select-premium:focus, .form-textarea-premium:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-textarea-premium { resize: vertical; min-height: 120px; }
+
+        .char-count {
+            text-align: right;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-weight: 600;
+        }
+
+        .input-with-icon, .select-with-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            left: 1.25rem;
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .input-with-icon .form-input-premium {
+            padding-left: 3.25rem;
+        }
+
+        .priority-dot, .status-dot {
+            position: absolute;
+            left: 1.25rem;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            z-index: 5;
+        }
+
+        .priority-dot.medium { background: #f59e0b; }
+        .status-dot.in-progress { background: #3b82f6; }
+
+        .select-with-icon .form-select-premium {
+            padding-left: 2.75rem;
+        }
+
+        .upload-zone {
+            border: 2px dashed #e2e8f0;
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            background: #f8fafc;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: #f1f5f9;
+        }
+
+        .upload-content i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            background: rgba(99, 102, 241, 0.1);
+            width: 60px;
+            height: 60px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .upload-content p { font-size: 1rem; margin-bottom: 0.5rem; }
+        .upload-content span { font-size: 0.8rem; color: var(--text-muted); }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-primary-premium {
+            background: var(--primary);
+            color: white;
+            padding: 0.85rem 1.75rem;
+            border-radius: 12px;
+            font-weight: 700;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-primary-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary-premium {
+            background: white;
+            color: var(--text-main);
+            padding: 0.85rem 1.75rem;
+            border-radius: 12px;
+            font-weight: 700;
+            border: 1.5px solid #edf2f7;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary-premium:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .breadcrumbs {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .breadcrumbs a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .breadcrumbs i { font-size: 0.65rem; }
+        .breadcrumbs span { color: var(--text-main); }
+
+        @media (max-width: 1000px) {
+            .form-grid { grid-template-columns: repeat(2, 1fr); }
+            .form-group.full-width { grid-column: span 2; }
+        }
+
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full-width { grid-column: span 1; }
+            .full-mobile { grid-column: span 1; }
+            .form-container-premium { padding: 1.5rem; }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+
+            uploadZone.addEventListener('click', () => fileInput.click());
+
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.style.borderColor = 'var(--primary)';
+                uploadZone.style.background = '#f1f5f9';
+            });
+
+            uploadZone.addEventListener('dragleave', () => {
+                uploadZone.style.borderColor = '#e2e8f0';
+                uploadZone.style.background = '#f8fafc';
+            });
+
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadZone.style.borderColor = '#e2e8f0';
+                uploadZone.style.background = '#f8fafc';
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    alert(files.length + ' file(s) dropped');
+                }
+            });
+
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files.length > 0) {
+                    alert(fileInput.files.length + ' file(s) selected');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
