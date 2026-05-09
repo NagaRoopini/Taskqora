@@ -1,0 +1,6 @@
+target/
+*.class
+*.jar
+*.log
+.env
+application-secret.properties
