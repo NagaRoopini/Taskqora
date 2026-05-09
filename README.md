@@ -1,10 +1,16 @@
-# Taskqora – Enterprise Task Management Platform
+# Taskqora – Team Task Management System
 
-## Overview
+## Live Demo
 
-Taskqora is a full-stack enterprise-grade task and project management platform designed to streamline team collaboration, project tracking, task assignment, and productivity monitoring.
+**Deployed Application:** [https://taskqora.onrender.com](https://taskqora.onrender.com)
 
-Built with role-based access for Admins and Team Members, Taskqora provides a professional SaaS-style management environment suitable for organizations, startups, educational institutions, and collaborative teams.
+---
+
+## Project Overview
+
+Taskqora is a full-stack Team Task Management System designed to streamline project collaboration, task assignment, and team productivity within organizations.
+
+Built with **Spring Boot + Thymeleaf + MySQL + Bootstrap + Chart.js**, Taskqora provides role-based dashboards for Admins and Team Members, enabling efficient project tracking, task delegation, and performance monitoring.
 
 ---
 
@@ -12,40 +18,27 @@ Built with role-based access for Admins and Team Members, Taskqora provides a pr
 
 ### Admin Module
 
-* Comprehensive Admin Dashboard
-* Project creation and management
-* Task assignment and monitoring
-* Team member management
-* Role-based permissions
-* Analytics dashboards with task/project insights
-* Profile management
-* Advanced system settings
-* Notification preferences
-* Security controls (2FA readiness, login tracking)
-* Account management and danger zone controls
+* Secure Admin Login/Register
+* Interactive Admin Dashboard
+* Create, Edit, Delete Projects
+* Create, Assign, Track Tasks
+* Team Member Management
+* Project Progress Monitoring
+* Task Status Analytics
+* Profile Management
+* Settings Configuration
+* System Overview
 
 ### Team Member Module
 
-* Personalized dashboard
-* My Tasks management
-* Task progress tracking
-* Task completion updates
-* Project visibility
-* Profile management
-* Notification settings
-* Secure password management
-
-### Core Functionalities
-
-* User authentication and authorization
-* Secure login/register system
-* Project lifecycle management
-* Task status updates
-* Team collaboration
-* Dashboard analytics
-* Profile customization
-* Responsive UI/UX
-* Professional SaaS-style design
+* Secure Member Registration/Login
+* Personalized Dashboard
+* View Assigned Tasks
+* View Assigned Projects
+* Track Task Deadlines
+* Profile Management
+* Settings Management
+* Task Progress Visibility
 
 ---
 
@@ -55,117 +48,87 @@ Built with role-based access for Admins and Team Members, Taskqora provides a pr
 
 * HTML5
 * CSS3
+* Bootstrap 5
 * JavaScript
-* Bootstrap / Custom Responsive UI
+* Thymeleaf
+* Chart.js
 
 ### Backend
 
 * Java
 * Spring Boot
-* Spring MVC
 * Spring Security
 * Spring Data JPA
+* Hibernate
 
 ### Database
 
-* MySQL
+* MySQL (Aiven Cloud MySQL for deployment)
 
-### Tools & Platforms
+### Deployment
 
-* GitHub
-* Maven
-* VS Code / IntelliJ IDEA
-* Postman
-* Render / Netlify / Railway (Deployment)
-
----
-
-## Project Architecture
-
-```txt
-Frontend (HTML/CSS/JS)
-       ↓
-Spring Boot Backend (Controllers, Services, Security)
-       ↓
-MySQL Database
-```
-
----
-
-## User Roles
-
-### Admin
-
-* Manage all projects
-* Manage all tasks
-* Assign tasks to members
-* Monitor progress
-* Invite/manage team members
-* Configure system settings
-* Security management
-
-### Team Member
-
-* View assigned tasks
-* Update task status
-* Track deadlines
-* View project details
-* Manage personal profile
-
----
-
-## Dashboard Highlights
-
-### Admin Dashboard
-
-* Total Projects
-* Total Tasks
-* Completed Tasks
-* Pending Tasks
-* Team Members
-* Task Overview Charts
-* Project Overview Charts
-* Recent Activity Feed
-* System Health Monitoring
-
-### Team Member Dashboard
-
-* Assigned Tasks
-* In Progress Tasks
-* Due Today
-* Task Overview Analytics
-* Upcoming Tasks
+* Render (Docker-based deployment)
+* GitHub (Version Control)
 
 ---
 
 ## Security Features
 
-* Role-based access control
-* Password management
-* Login activity monitoring
-* Notification settings
-* Two-factor authentication readiness
-* Secure account deletion workflows
+* JWT Authentication
+* Role-Based Access Control
+* Password Encryption
+* Secure Session Handling
+* Environment Variable Protection
 
 ---
 
-## Screenshots
+## Project Structure
 
-Include:
-
-* Admin Dashboard
-* Projects Page
-* Tasks Page
-* Team Members Page
-* Profile Page
-* Settings Module
-* Team Member Dashboard
+```bash
+Taskqora/
+│── src/main/java/com/taskqora/
+│   ├── controller/
+│   ├── model/
+│   ├── repository/
+│   ├── service/
+│   ├── security/
+│
+│── src/main/resources/
+│   ├── templates/
+│   ├── static/
+│   ├── application.properties
+│
+│── Dockerfile
+│── pom.xml
+│── README.md
+```
 
 ---
 
-## Installation Guide
+## Deployment Details
 
-### Clone Repository
+### Live URL:
+
+[https://taskqora.onrender.com](https://taskqora.onrender.com)
+
+### Hosting Platform:
+
+* Render Web Service
+* Docker Containerized Deployment
+* Cloud MySQL Database
+
+---
+
+## Installation Guide (Local Setup)
+
+### Prerequisites
+
+* Java 17+
+* Maven
+* MySQL
+* Git
+
+### Steps
 
 ```bash
 git clone https://github.com/yourusername/Taskqora.git
@@ -180,87 +143,86 @@ Update `application.properties`:
 spring.datasource.url=jdbc:mysql://localhost:3306/taskqora
 spring.datasource.username=your_username
 spring.datasource.password=your_password
-spring.jpa.hibernate.ddl-auto=update
 ```
 
-### Run Project
+### Run Application
 
 ```bash
 mvn spring-boot:run
 ```
 
-### Access Application
+### Access
 
-```txt
+```bash
 http://localhost:8080
 ```
 
 ---
 
-## Deployment Plan
-
-### Recommended:
-
-* Frontend: Netlify
-* Backend: Render
-* Database: Railway MySQL
-
----
-
 ## Future Enhancements
 
-* Real-time notifications
-* File attachments
-* Team chat system
-* Calendar integration
-* Email invitations
-* Export reports (PDF/Excel)
-* Advanced analytics
-* Mobile responsiveness improvements
+* Email Notifications
+* Google OAuth Integration
+* Advanced Analytics Dashboard
+* File Attachments for Tasks
+* Team Chat System
+* Mobile Responsive Enhancements
+* AI-based Productivity Insights
 
 ---
 
-## Resume Value
+## Screens Included
 
-Taskqora demonstrates:
-
-* Full-stack development
-* Enterprise UI/UX design
-* Authentication systems
-* Role-based authorization
-* Database integration
-* SaaS architecture
-* Dashboard engineering
-* Security best practices
+* Login Page
+* Registration Page
+* Admin Dashboard
+* Member Dashboard
+* Projects Page
+* Tasks Page
+* Team Members Page
+* Profile Page
+* Settings Page
 
 ---
 
 ## Author
 
-**Battu Naga Roopini**
+**Naga Roopini Battu**
 
-### Academic Background:
-
-* B.Tech IT (3rd Year)
-* Java Developer
+* BTech IT Student
 * Full Stack Developer
-* AI/ML Enthusiast
+* Java | Spring Boot | MySQL | Web Development
 
-### Certifications:
+---
 
-* Google Android Developer Virtual Internship
-* Google AI-ML Virtual Internship
-* Juniper Internship
-* NPTEL Programming in Java
+## Resume Highlights
+
+* Dynamic Portfolio Development
+* Hospital Management System
+* EduBridge AI Platform
+* Taskqora Team Management System
 
 ---
 
 ## License
 
-This project is developed for educational, portfolio, and professional showcase purposes.
+This project is developed for educational, internship, and professional portfolio purposes.
 
 ---
 
-# Final Note
+## Final Note
 
-Taskqora is designed as a professional enterprise-grade project management platform that showcases advanced full-stack development capabilities, modern UI/UX principles, and scalable SaaS architecture.
+Taskqora demonstrates practical full-stack development skills including:
+
+* Backend Architecture
+* Frontend UI/UX
+* Secure Authentication
+* Cloud Deployment
+* Database Management
+* Real-world Team Collaboration Features
+
+---
+
+## Thank You
+
+If you found this project valuable, feel free to explore, fork, and enhance it for future productivity solutions.
