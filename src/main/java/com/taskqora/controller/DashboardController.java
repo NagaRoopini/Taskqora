@@ -30,7 +30,7 @@ public class DashboardController {
         
         model.addAttribute("user", user);
         
-        if ("ADMIN".equals(user.getRole())) {
+        if ("ADMIN".equalsIgnoreCase(user.getRole())) {
             model.addAttribute("stats", taskService.getTaskStats());
             model.addAttribute("projectStats", projectService.getProjectStats());
             model.addAttribute("totalProjects", projectService.getAllProjects().size());

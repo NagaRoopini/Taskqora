@@ -31,7 +31,10 @@ public class UserService {
             throw new RuntimeException("Email already registered");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(userRepository.count() == 0 ? "ADMIN" : "MEMBER");
+        // Set role: if provided in form, use it; otherwise default to MEMBER (or ADMIN for first user)
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            user.setRole(userRepository.count() == 0 ? "ADMIN" : "MEMBER");
+        }
         return userRepository.save(user);
     }
 
