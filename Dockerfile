@@ -4,9 +4,10 @@ WORKDIR /app
 
 COPY . .
 
-RUN chmod +x mvnw
-RUN ./mvnw clean package -DskipTests
+RUN apt-get update && apt-get install -y maven
 
-EXPOSE 8080
+RUN mvn clean package -DskipTests
 
-CMD ["java", "-Dserver.port=8080", "-jar", "target/taskqora.jar"]
+EXPOSE 10000
+
+CMD ["java", "-jar", "target/Taskqora-0.0.1-SNAPSHOT.jar"]
